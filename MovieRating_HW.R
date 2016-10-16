@@ -18,8 +18,11 @@ head(Movies)
 
 myDF <- data.frame(Movies$Genre,Movies$Movie.Title,Movies$Studio,Movies$Budget...mill.,Movies$Gross...US)
 colnames(myDF) <- c("Genere","Title","Studio","Budget","GrossUSA")
+
 myDF$Genere <- factor(myDF$Genere)
 myDF1 <- myDF [myDF$Genere != "horror" & myDF$Genere != "fantasy" & myDF$Genere != "biography" & myDF$Genere != "thriller"& myDF$Genere != "sci-fi" & myDF$Genere != "musical"& myDF$Genere != "crime"& myDF$Genere != "romance"& myDF$Genere != "mystery" & myDF$Genere != "documentary",]
+
+
 #filt <- (myDF1$Studio = "Buena Vista Studios") | (myDF1$Studio = "Fox") | (myDF1$Studio = "Paramount Pictures") | (myDF1$Studio = "WB") | (myDF1$Studio = "Sony") | (myDF1$Studio = "Universal")
 #filt1 <- (myDF1$Studio != "Colombia Pictures") & (myDF1$Studio != "TriStar") 
 #myDF1 <- myDF1[myDF1$Studio = "Buena Vista Studios" | myDF1$Studio = "Fox" | myDF1$Studio = "Paramount Pictures" | myDF1$Studio = "WB" | myDF1$Studio = "Sony" | myDF1$Studio = "Universal",]
@@ -33,4 +36,6 @@ myDF2 <- myDF1[myDF1$Studio != "Colombia Pictures" & myDF1$Studio != "TriStar" &
 head(myDF2)
 
 library(ggplot2)
-ggplot(data = myDF2,aes(x=Genere,y=GrossUSA)) + geom_jitter(aes(color = Studio,size=Budget))+ geom_boxplot(aes(alpha=0.5))
+q <- ggplot(data = myDF2,aes(x=Genere,y=GrossUSA)) + geom_jitter(aes(color = Studio,size=Budget))+ geom_boxplot(aes(alpha=0.5),outlier.colour = NA)
+
+q+ xlab("Genre") + ylab("Gross USA") + ggtitle("Domestic Gross % VS Genre")
