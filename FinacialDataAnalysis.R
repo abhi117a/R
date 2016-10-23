@@ -71,4 +71,46 @@ data[3,]
 
 median_Emp_FinService <- median(data[data$Industry == "Financial Services","Employees"],na.rm = T)
 data[is.na(data$Employees)&(data$Industry == "Financial Services"),"Employees"] <- median_Emp_FinService
+data[330,]
+
+data[!complete.cases(data$Growth),]
+
+median(data[,"Growth"],na.rm=T)
+meadian_Construct_Growth <- median(data[data$Industry =="Construction","Growth"],na.rm=T)
+data[is.na(data$Growth) & data$Industry == "Construction","Growth"] <- meadian_Construct_Growth
+data[8,]
+
+data[!complete.cases(data),]
+
+median_Contruct_Rev <- median(data[data$Industry == "Construction","Revenue"], na.rm = T)
+data[data$Industry == "Construction" & is.na(data$Revenue), "Revenue"] <- median_Contruct_Rev
+
+
+median_Ind_Expenses <- median(data[data$Industry=="Construction","Expenses"], na.rm = T)
+data[data$Industry== "Construction" & is.na(data$Expenses) & is.na(data$Profit),"Expenses"] <- median_Ind_Expenses
+
+
+#Revenue-Expenses = Profit
+
+data[is.na(data$Profit),"Profit"] <- data[is.na(data$Profit),"Revenue"] - data[is.na(data$Profit),"Expenses"] 
+data[c(8,42),]
+
+data[is.na(data$Expenses),"Expenses"] <- data[is.na(data$Expenses),"Revenue"] - data[is.na(data$Expenses),"Profit"]
+data[15,]
+
+
+library(ggplot2)
+str(data)
+
+p <- ggplot(data=data,aes(x = data$Revenue, y= data$Expenses, color= data$Industry)) 
+p + geom_point(aes(size = data$Profit))
+
+p + geom_smooth(fill=NA)
+
+
+b <- ggplot(data = data, aes(x = data$Industry, y = data$Growth, color = data$Industry))
+b+ geom_jitter(size = 1) +geom_boxplot(alpha = 0.5, size = 1, outlier.color = NA)
+
+
+
 
