@@ -50,3 +50,21 @@ lapply(Weather, function(x) round(x[4,]/x[3,],2))
 sapply(Weather, rowMeans)
 sapply(Weather, function(x) x[1,]-x[2,]/x[2,])
 sapply(Weather, function(z) round(z[4,]/z[3,],2))
+
+##############Nesting Apply function
+
+
+sapply(Weather, apply, 1,max)
+sapply(Weather, function(x) apply(x,1,max))
+
+
+#####################################
+
+which.max(Chicago[1,])
+
+names(which.max(Chicago[1,]))
+
+
+
+sapply(Weather, function(y) apply(y, 1,function(x) names(which.max(x))))
+
