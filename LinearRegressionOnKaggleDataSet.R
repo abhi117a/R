@@ -18,3 +18,14 @@ corrplot(cor_data, method = "color")
 corrgram(stud_mat)
 corrgram(stud_mat, order = T, lower.panel = panel.shade, upper.panel = panel.pie, text.panel = panel.txt)
 ggplot(stud_mat, aes(x = stud_mat$G3)) + geom_histogram(color = "blue", fill = "red")
+#Splitting Data
+set.seed(101)
+library(caTools)
+split <- sample.split(stud_mat$G3, SplitRatio = 0.7)
+train_Stud <- subset(stud_mat, split == T)
+test_stud <- subset(stud_mat, split==F)
+
+
+model <- lm(G3 ~., data = stud_mat)
+summary(model)
+
