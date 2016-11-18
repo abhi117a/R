@@ -68,4 +68,28 @@ print("Accuracy")
 
 
 table(test$Survived, predictTest > 0.5)
+#############################################################################################
 
+titan_test <- read.csv("titanic_test.csv")
+titan_test[is.na(titan_test)]
+missmap(titan_test,col = c("yellow", "black"))
+
+
+head(titan_test)
+
+titan_test[titan_test$Pclass==1 & is.na(titan_test$Age),]
+med1 <- median(titan_test[titan_test$Pclass==1,"Age"], na.rm = T)
+titan_test[titan_test$Pclass==1 & is.na(titan_test$Age),"Age"] <- med1
+
+
+titan_test[titan_test$Pclass==2 & is.na(titan_test$Age),]
+med2 <- median(titan_test[titan_test$Pclass==2,"Age"], na.rm = T)
+titan_test[titan_test$Pclass==2 & is.na(titan_test$Age),"Age"] <- med2
+
+
+titan_test[titan_test$Pclass==3 & is.na(titan_test$Age),]
+med3 <- median(titan_test[titan_test$Pclass==3,"Age"], na.rm = T)
+titan_test[titan_test$Pclass==3 & is.na(titan_test$Age),"Age"] <- med3
+
+
+titan_test[is.na(titan_test$Fare),] <- NULL
