@@ -12,3 +12,6 @@ testSet <- subset(data_salary, split==F)
 
 regressor = lm(formula = Salary ~ YearsExperience,data =traingSet)
 summary(regressor)
+
+predict_sal = predict(regressor, newdata = testSet)
+predict_sal
