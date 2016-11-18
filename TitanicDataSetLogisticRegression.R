@@ -2,8 +2,11 @@
 df_train <- read.csv("titanic_train.csv")
 head(df_train)
 str(df_train)
+#CHecking Missing Data
 library(Amelia)
 missmap(df_train,main = "Missing Map", col = c("yellow","black"), legend = F)
+
+#Exploring Data
 
 library(ggplot2)
 ggplot(df_train) +
@@ -16,6 +19,8 @@ ggplot(df_train, aes(x=factor(df_train$Pclass), y=df_train$Age, color = df_train
 ggplot(df_train) + geom_histogram(aes(x=df_train$Fare, fill = df_train$Sex), color = "black")
 
 
+# Replacing missing Data with Mean values
+
 head(df_train[is.na(df_train[,"Age"]),])
 
 mean1 <- mean(df_train[df_train$Pclass==1,"Age"], na.rm = T)
@@ -26,3 +31,41 @@ df_train[df_train$Pclass==1 & is.na(df_train$Age),"Age"] <- mean1
 df_train[df_train$Pclass==2 & is.na(df_train$Age),"Age"] <- mean2
 df_train[df_train$Pclass==3,"Age"]
 df_train[df_train$Pclass==3 & is.na(df_train$Age),"Age"] <- mean3
+
+library(dplyr)
+df_train <- select(df_train,-PassengerId,-Name,-Ticket,-Cabin)
+df_train$Survived <- factor(df_train$Survived)
+df_train$Pclass <- factor(df_train$Pclass)
+df_train$Parch <- factor(df_train$Parch)
+df_train$SibSp <- factor(df_train$SibSp)
+
+str(df_train)
+
+
+#Modeling
+
+logModel <- glm(Survived~.,family = binomial(link="logit"), data = df_train)
+summary(logModel)
+
+#Practicing of Split
+
+library(caTools)
+split <- sample.split(df_train$Survived, SplitRatio = 0.75)
+train <- subset(df_train, split== T)
+test <- subset(df_train, split == F)
+
+
+lofFinalModel <- glm(Survived~., family = binomial(link = "logit"), data = train)
+summary(lofFinalModel)
+
+predictTest <- predict(lofFinalModel,newdata = test, type = "response")
+
+result <- ifelse(predictTest > 0.5, 1,0)
+
+misClasificError <- mean(result!=test$Survived)
+print("Accuracy")
+1-misClasificError
+
+
+table(test$Survived, predictTest > 0.5)
+
