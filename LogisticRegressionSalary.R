@@ -105,6 +105,37 @@ adult
 missmap(adult,y.at=c(1),y.labels = c(''),col=c('yellow','black'))
 
 adult <- na.omit(adult)
-
-
 str(adult)
+
+library(ggplot2)
+g <- ggplot(adult)
+g +  geom_histogram(aes(x = adult$age, fill = adult$income), color = "black", binwidth = 1) + theme_bw()
+
+g+ geom_histogram(aes(x=adult$hr_per_week), color = "black")
+ 
+head(adult)
+
+colnames(adult)[14] <- c("region")
+
+
+g <- ggplot(adult)
+g+ geom_bar(aes(x=adult$region, fill = adult$income), color = "black") + theme_bw() +
+  theme(axis.text.x = element_text(angle =90, hjust = 1))
+
+
+####Building A Model
+
+library(caTools)
+split <- sample.split(adult$income, SplitRatio = 0.8)
+train_adult <- subset(x = adult, split == T)
+test_adult <- subset(x=adult, split == F)
+nrow(train_adult)
+
+model <- glm(formula= income ~., family = binomial(logit),data = train_adult)
+summary(model)
+
+result <- predict(model, test_adult, type = "response")
+
+table(test_adult$income, result > 0.5)
+
+
