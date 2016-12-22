@@ -1,16 +1,19 @@
 #MushRoom Classification
-mushroom <- read.csv("cancerdata.csv")
+mushroom <- read.csv("mushrooms.csv")
 head(mushroom,1)
 str(mushroom)
-mushroom[is.na(mushroom)]
-lapply(mushroom, as.numeric)
-mushroom <- mushroom <- as.numeric(unlist(mushroom))
-head(mushroom)
-library(corrplot)
-cor_data <- cor(mushroom, use="pairwise.complete.obs")
-corrplot(cor_data, method = "pie")
 
-library(ggplot2)
-g <- ggplot(mushroom)
-g + geom_histogram(aes(x = mushroom$id))
-hist(mushroom)
+library(caTools)
+split <- sample.split(mushroom$class, SplitRatio = 0.7)
+mushroom_train <- subset(mushroom, split == TRUE)
+mushroom_test <- subset(mushroom, split == FALSE)
+nrow(mushroom_train)
+nrow(mushroom_test)
+x <- mushroom_test
+x$class <- NULL
+
+library(rpart)
+regressor = rpart(formula = class~., data = mushroom_train, control = rpart.control(minsplit = 1))
+
+y_pred = predict(regressor, x)
+head(y_pred)
