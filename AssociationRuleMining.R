@@ -1,0 +1,32 @@
+titanic <- read.csv("titanic.csv")
+str(titanic)
+head(titanic)
+MyData <- data.frame(titanic$pclass, titanic$survived, titanic$sex, titanic$age)
+head(MyData)
+summary(MyData)
+head(mydataClean)
+mydataClean <- na.omit(MyData)
+mydataClean$titanic.pclass <- as.factor(mydataClean$titanic.pclass) 
+mydataClean$titanic.survived <- as.factor(mydataClean$titanic.survived) 
+mydataClean$titanic.sex <- as.factor(mydataClean$titanic.sex) 
+mydataClean[["titanic.age"]] <-ordered(cut(mydataClean[["titanic.age"]], breaks = c(0,18,100)), labels = c("child", "adult"))
+mydataClean$titanic.age <- as.factor(mydataClean$titanic.age)
+str(mydataClean)
+colnames(mydataClean) <- c("Class","Survived","Sex","Age")
+mydataClean <- data.frame(mydataClean)
+typeof(mydataClean)
+
+library(arules)
+rules <- apriori(mydataClean)
+rules <- apriori(mydataClean, parameter = list(minlen=2, supp=0.005, conf=0.8), appearance = list(rhs=c("Survived=0", "Survived=1"), default = "lhs"))
+
+inspect(rules)
+
+rules.sorted <- sort(rules,by="lift")
+inspect(rules.sorted)
+
+
+library(arulesViz)
+plot(rules)
+plot(rules, method="graph", control=list(type="items"))
+plot(rules, method="paracoord", control=list(reorder=TRUE))
