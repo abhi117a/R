@@ -14,3 +14,11 @@ tsunami$CAUSE <- as.factor(tsunami$CAUSE)
 tsunami$VALIDITY <- as.factor(tsunami$VALIDITY)
 tsunami$FOCAL_DEPTH <- as.factor(tsunami$FOCAL_DEPTH)
 tsunami[["PRIMARY_MAGNITUDE"]] <- ordered(cut(tsunami[["PRIMARY_MAGNITUDE"]], c(-1,2.5,5.5,11)), labels = c("Low","Med","High"))
+tsunami$REGION_CODE <- NULL
+#tsunami$COUNTRY <- as.factor(tsunami$COUNTRY)
+tsunami$LATITUDE <- NULL
+tsunami$LONGITUDE <- NULL
+tsunami$MAXIMUM_HEIGHT <- as.factor(tsunami$MAXIMUM_HEIGHT)
+tsunami$MAGNITUDE_ABE <- as.factor(tsunami$MAGNITUDE_ABE)
+tsunami$MAGNITUDE_IIDA <- as.factor(tsunami$MAGNITUDE_IIDA)
+tsunami$INTENSITY_SOLOVIEV <- as.factor(tsunami$INTENSITY_SOLOVIEV)
