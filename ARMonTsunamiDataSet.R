@@ -55,9 +55,11 @@ str(tsunami)
 
 library(arules)
 rules <- apriori(tsunami)
-rules <- apriori(tsunami, parameter = list(minlen=3, supp=0.12, conf=0.8), appearance = list(rhs=c("HOUR=Night", "HOUR=Morning","HOUR=Noon", "HOUR=Evening"), default = "lhs"))
+#rule to find out during which time maximum tsunamis occured
+rules <- apriori(tsunami, parameter = list(minlen=1, supp=0.12, conf=0.8), appearance = list(rhs=c("HOUR=Night", "HOUR=Morning","HOUR=Noon", "HOUR=Evening"), default = "lhs"))
 
-rules <- apriori(tsunami, parameter = list(minlen=3, supp=0.12, conf=0.8), appearance = list(rhs=c("CAUSE=1", "CAUSE=2","CAUSE=3", "CAUSE=4", "CAUSE=5", "CAUSE=6", 
+#rules to find out which was the biggest cause
+rules <- apriori(tsunami, parameter = list(minlen=1, supp=0.12, conf=0.8), appearance = list(rhs=c("CAUSE=1", "CAUSE=2","CAUSE=3", "CAUSE=4", "CAUSE=5", "CAUSE=6", 
                                                                                                     "CAUSE=7", "CAUSE=8", "CAUSE=9", "CAUSE=10", "CAUSE=11", "CAUSE=0"),
                                                                                               default = "lhs"))
 
