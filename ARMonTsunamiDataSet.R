@@ -48,5 +48,24 @@ tsunami$HOUSE_DAMAGE_TOTAL<- NULL
 tsunami$ALL_HOUSES_DESTROYED <- NULL
 tsunami$HOUSE_DESTRUCTION_TOTAL <- NULL
 tsunami$WARNING_STATUS <- NULL
+tsunami$YEAR <- ordered(as.factor(tsunami$YEAR))
 summary(tsunami)
 str(tsunami)
+
+
+library(arules)
+rules <- apriori(tsunami)
+rules <- apriori(tsunami, parameter = list(minlen=3, supp=0.12, conf=0.8), appearance = list(rhs=c("HOUR=Night", "HOUR=Morning","HOUR=Noon", "HOUR=Evening"), default = "lhs"))
+
+rules <- apriori(tsunami, parameter = list(minlen=3, supp=0.12, conf=0.8), appearance = list(rhs=c("CAUSE=1", "CAUSE=2","CAUSE=3", "CAUSE=4", "CAUSE=5", "CAUSE=6", 
+                                                                                                    "CAUSE=7", "CAUSE=8", "CAUSE=9", "CAUSE=10", "CAUSE=11", "CAUSE=0"),
+                                                                                              default = "lhs"))
+
+
+rules.sorted <- sort(rules,by="lift")
+
+
+head(inspect(rules))
+library(arulesViz)
+plot(rules)
+
