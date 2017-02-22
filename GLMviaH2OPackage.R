@@ -44,8 +44,9 @@ karsh2o1 <- as.h2o(kar1)
 summary(karsh2o1)
 #str(karsh2o1)
 #lmR1 <- lm(formula =  price~., data = karsh2o)
-h2o.glm(y = "price", x = c("yearOfRegistration","powerPS","kilometer","postalCode"), 
+fit <- h2o.glm(y = "price", x = c("yearOfRegistration","powerPS","kilometer","postalCode"), 
         training_frame = karsh2o1, 
         family = "gaussian", nfolds = 10, alpha = 0.5)
-
-
+test <- c("2016","96.05","14956","30549")
+testh2o <- as.h2o(test)
+pred <- h2o.predict(fit,testh2o)
