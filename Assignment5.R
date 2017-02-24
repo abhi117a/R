@@ -29,4 +29,45 @@ plot(lmR$residuals,auto[,1])
 #Updating model based on summary and plots
 lmR <- lm(formula = mpg ~ weight + model + origin, data = auto)
 summary(lmR)
+plot(lmR$residuals,lmR$fitted.values)
+plot(auto$weight,lmR$residuals)
+plot(auto$model,lmR$residuals)
+plot(auto$origin,lmR$residuals)
+lmR <- glm(formula = mpg ~ weight + model + origin, data = auto)
+# No non-linear effects
+#After fitting the model let's check the accuracy using the CV techniques
+#LOOCV approch
+library(boot)
+cv_error <- cv.glm(auto[,-9],lmR)
+cv_error$delta
+#K-Fold using K=10
+cv_errK <- cv.glm(auto[,-9],lmR,K = 10)
+cv_errK$delta
+
+student_por <- read.csv("student-por.csv",sep = ";")
+head(student_por)
+summary(student_por)
+LinModel <- glm(formula = G1~.,data = student_por,family = gaussian)
+summary(LinModel)
+plot(LinModel$residuals,LinModel$fitted.values)
+plot(student_por$G2,LinModel$residuals)
+plot(student_por$G3,LinModel$residuals)
+plot(student_por$school,LinModel$residuals)
+
+#After initial model we see there are lot parameters which are not significant
+#try removing them and creating new model, also saw few residual plots which seems like there is non linear relationship
+#we will try it
+#Linear Model with G2 and G3 including
+summary(student_por)
+str(student_por)
+student_por$G2
+LinModel1 <- glm(formula = G1~school+age+schoolsup+absences+G2+G3,
+                 data = student_por,family = gaussian)
+summary(LinModel1)
+LinModel1LoocV <- cv.glm(student_por,LinModel1)
+
+sqrt(mean(LinModel1$residuals^2))
+
+LinModel1LoocV$delta
+
 
