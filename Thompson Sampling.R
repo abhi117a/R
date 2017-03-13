@@ -1,5 +1,5 @@
 # Thompson Sampling
-
+dataset <- read.csv("Ads_CTR_Optimisation.csv")
 # Implementing Thompson Sampling
 N = 100000
 d = 10
