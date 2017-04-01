@@ -28,9 +28,11 @@ defaultData$X22 <- as.numeric(defaultData$X22)
 defaultData$X23 <- as.numeric(defaultData$X23)
 defaultData$Y <- as.factor(defaultData$Y)
 
+library(ggplot2)
+g <- ggplot(defaultData)
 i = {}
 for (i in colnames(defaultData)){
-  hist(defaultData[,i])
+  print (g+geom_bar(aes(i)))
 }
 
 defaultData$X5 <- NULL
@@ -62,6 +64,32 @@ cm <- table(defaultTest$Y,SVMPredLin)
 cm
 nrow(defaultTest)
 
+#Scaling
+svmLinS <- svm(Y~., data = defaultTrain, kernel = "linear", cost = 1000, scale = TRUE)
+SVMPredLinS <- predict(svmLinS, newdata = defaultTest[,-23], type = "class")
+cm <- table(defaultTest$Y,SVMPredLinS)
+cm
+nrow(defaultTest)
 
+#kernel = polynomial
+svmPoly <- svm(Y~., data = defaultTrain, kernel = "polynomial", cost = 5, gamma = 0.043)
+SVMPredPoly <- predict(svmPoly, newdata = defaultTest[,-23], type = "class")
+cm <- table(defaultTest$Y,SVMPredPoly)
+cm
+nrow(defaultTest)
+#reducing cost even further
+svmPoly <- svm(Y~., data = defaultTrain, kernel = "polynomial", cost = 1, gamma = 0.043)
+SVMPredPoly <- predict(svmPoly, newdata = defaultTest[,-23], type = "class")
+cm <- table(defaultTest$Y,SVMPredPoly)
+cm
+nrow(defaultTest)
+#didn't improve the result
 
+#trying kernel radial
+svmRadial <- svm(Y~., data = defaultTrain, kernel = "radial", cost = 1, gamma = 0.043)
+SVMPredRad <- predict(svmRadial, newdata = defaultTest[,-23], type = "class")
+cm <- table(defaultTest$Y,SVMPredRad)
+cm
+nrow(defaultTest)
 
+#same accuracy with radial and polynomial, for linear kernel the accuracy is very low 50% and it takes hours to run the code
