@@ -1,2 +1,2 @@
 # R
-Stats, Data Representation and Machine Learning Codes done in R
+Machine Learning, Statistical analysis & Statistical modeling, Data Analysis & Data Visualization, Text Mining, Natural Language Processing, Big Data, H2O.
