@@ -4,6 +4,9 @@ library(magrittr)
 library(sos)
 library(caret)
 library(doParallel)
+library(rpart)
+library(rpart.plot)
+library(e1071)
 #library(binr)
 data_16 <- read.table("2016.csv", sep = ",", header = TRUE)
 data_15 <- read.table("2015.csv", sep = ",", header = TRUE)
@@ -114,7 +117,115 @@ data_4 <- optbin(formula = Happiness.Score.l ~., data = train_data, method = "lo
 data_5 <- optbin(formula = Happiness.Score.l ~., data = train_data, method = "infogain")
 
 
+#Now I am running the OneR models. During model building, the chosen attribute/feature with highest accuracy along with the top 7 
+#features decision rules and accuracies are printed. Unfortunately, this information is not saved in the model object; 
+#this would have been nice in order to compare the importance of features across models later on.
+#Here, all five models achieved highest prediction accuracy with the feature Economy GDP per capita.
 
 
+
+for (i in 1:5) {
+  data <- get(paste0("data_", i))
+  print(model <- OneR(formula = Happiness.Score.l ~., data = data, verbose = TRUE))
+  assign(paste0("model_", i), model)
+}
+
+
+#The function eval_model() prints confusion matrices for absolute and relative predictions, as well as accuracy, error and error rate reduction. 
+#For comparison with other models, it would have been convenient to be able to extract these performance metrics directly from the eval_model object,
+#instead of only the confusion matrix and values of correct/all instances and having to re-calculate performance metrics again manually.
   
+for (i in 1:5) {
+  model <- get(paste0("model_", i))
+  eval_model(predict(model, test_data), test_data$Happiness.Score.l)
+}
 
+
+#Because I want to calculate performance measures for the different classes separately and like to have a more detailed look at the prediction probabilities I
+#get from the models, I prefer to obtain predictions with type = "prob. While I am not looking at it here, this would also allow me to test different prediction 
+#thresholds.
+
+
+for (i in 1:5) {
+  model <- get(paste0("model_", i))
+  pred <- data.frame(model = paste0("model_", i),
+                     sample_id = 1:nrow(test_data),
+                     predict(model, test_data, type = "prob"),
+                     actual = test_data$Happiness.Score.l)
+  pred$prediction <- colnames(pred)[3:5][apply(pred[, 3:5], 1, which.max)]
+  pred$correct <- ifelse(pred$actual == pred$prediction, "correct", "wrong")
+  pred$pred_prob <- NA
+  
+  for (j in 1:nrow(pred)) {
+    pred[j, "pred_prob"] <- max(pred[j, 3:5])
+  }
+  
+  if (i == 1) {
+    pred_df <- pred
+  } else {
+    pred_df <- rbind(pred_df, pred)
+  }
+}
+
+
+#First, I am building a decision tree with the rpart package and rpart() function. This, we can plot with rpart.plot().
+#Economy GDP per capita is the second highest node here, the best predictor here would be health and life expectancy.
+
+
+set.seed(42)
+fit <- rpart(Happiness.Score.l ~ .,
+             data = train_data,
+             method = "class",
+             control = rpart.control(xval = 10), 
+             parms = list(split = "information"))
+
+rpart.plot(fit, extra = 100)
+
+#In order to compare the models, I am producing the same output table for predictions from this model and combine it with the table from the OneR models.
+
+pred <- data.frame(model = "rpart",
+                   sample_id = 1:nrow(test_data),
+                   predict(fit, test_data, type = "prob"),
+                   actual = test_data$Happiness.Score.l)
+pred$prediction <- colnames(pred)[3:5][apply(pred[, 3:5], 1, which.max)]
+pred$correct <- ifelse(pred$actual == pred$prediction, "correct", "wrong")
+pred$pred_prob <- NA
+
+for (j in 1:nrow(pred)) {
+  pred[j, "pred_prob"] <- max(pred[j, 3:5])
+}
+
+
+pred_df_final <- rbind(pred_df,
+                       pred)
+set.seed(42)
+model_rf <- train(Happiness.Score.l ~ .,
+                         data = train_data,
+                         method = "rf",
+                         trControl = trainControl(method = "repeatedcv", 
+                                                  number = 10, 
+                                                  repeats = 5, 
+                                                  verboseIter = FALSE))
+
+
+#The varImp() function from caret shows us which feature was of highest importance for the model and its predictions.
+#Here, we again find Economy GDP per captia on top.
+
+
+varImp(model_rf)
+
+pred <- data.frame(model = "rf",
+                   sample_id = 1:nrow(test_data),
+                   predict(model_rf, test_data, type = "prob"),
+                   actual = test_data$Happiness.Score.l)
+pred$prediction <- colnames(pred)[3:5][apply(pred[, 3:5], 1, which.max)]
+pred$correct <- ifelse(pred$actual == pred$prediction, "correct", "wrong")
+pred$pred_prob <- NA
+
+for (j in 1:nrow(pred)) {
+  pred[j, "pred_prob"] <- max(pred[j, 3:5])
+}
+
+
+pred_df_final <- rbind(pred_df_final,
+                       pred)
