@@ -18,9 +18,37 @@ fluH7N9_china_2013$case.ID <- paste("case", fluH7N9_china_2013$case.ID, sep = "_
 head(fluH7N9_china_2013)
 
 ```
+Before I start preparing the data for Machine Learning, I want to get an idea of the distribution of the data points and their different variables by plotting.
 
+Most provinces have only a handful of cases, so I am combining them into the category “other” and keep only Jiangsu, Shanghai and Zhejian and separate provinces.
 ```{r}
+# gather for plotting with ggplot2
+library(tidyr)
+fluH7N9.china.2013_gather <- fluH7N9_china_2013 %>%
+  gather(Group, Date, date_of_onset:date_of_outcome)
 
+# rearrange group order
+fluH7N9.china.2013_gather$Group <- factor(fluH7N9.china.2013_gather$Group, levels = c("date.of.onset", "date.of.hospitalisation", "date.of.outcome"))
+
+# rename groups
+library(plyr)
+fluH7N9.china.2013_gather$Group <- mapvalues(fluH7N9.china.2013_gather$Group, from = c("date.of.onset", "date.of.hospitalisation", "date.of.outcome"), 
+          to = c("Date of onset", "Date of hospitalisation", "Date of outcome"))
+
+# renaming provinces
+fluH7N9.china.2013_gather$province <- mapvalues(fluH7N9.china.2013_gather$province, 
+                                                from = c("Anhui", "Beijing", "Fujian", "Guangdong", "Hebei", "Henan", "Hunan", "Jiangxi", "Shandong", "Taiwan"), 
+                                                to = rep("Other", 10))
+
+# add a level for unknown gender
+levels(fluH7N9.china.2013_gather$gender) <- c(levels(fluH7N9.china.2013_gather$gender), "unknown")
+fluH7N9.china.2013_gather$gender[is.na(fluH7N9.china.2013_gather$gender)] <- "unknown"
+
+# rearrange province order so that Other is the last
+fluH7N9.china.2013_gather$province <- factor(fluH7N9.china.2013_gather$province, levels = c("Jiangsu",  "Shanghai", "Zhejiang", "Other"))
+
+# convert age to numeric
+fluH7N9.china.2013_gather$age <- as.numeric(as.character(fluH7N9.china.2013_gather$age))
 ```
 
 
