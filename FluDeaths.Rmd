@@ -108,3 +108,52 @@ When you save the notebook, an HTML file containing the code and output will be 
 
 The preview shows you a rendered HTML copy of the contents of the editor. Consequently, unlike *Knit*, *Preview* does not run any R code chunks. Instead, the output of the chunk when it was last run in the editor is displayed.
 
+```{r}
+library(magrittr)
+fluH7N9.china.2013_gather_2 <- fluH7N9.china.2013_gather[, -4] %>%
+  gather(group_2, value, gender:province)
+
+fluH7N9.china.2013_gather_2$value <- mapvalues(fluH7N9.china.2013_gather_2$value, from = c("m", "f", "unknown", "Other"), 
+          to = c("Male", "Female", "Unknown gender", "Other province"))
+
+fluH7N9.china.2013_gather_2$value <- factor(fluH7N9.china.2013_gather_2$value, 
+                                            levels = c("Female", "Male", "Unknown gender", "Jiangsu", "Shanghai", "Zhejiang", "Other province"))
+
+p1 <- ggplot(data = fluH7N9.china.2013_gather_2, aes(x = value, fill = outcome, color = outcome)) +
+  geom_bar(position = "dodge", alpha = 0.7, size = 1) +
+  my_theme() +
+  scale_fill_brewer(palette="Set1", na.value = "grey50") +
+  scale_color_brewer(palette="Set1", na.value = "grey50") +
+  labs(
+    color = "",
+    fill = "",
+    x = "",
+    y = "Count",
+    title = "2013 Influenza A H7N9 cases in China",
+    subtitle = "Gender and Province numbers of flu cases",
+    caption = ""
+  )
+
+p2 <- ggplot(data = fluH7N9.china.2013_gather, aes(x = age, fill = outcome, color = outcome)) +
+  geom_density(alpha = 0.3, size = 1) +
+  geom_rug() +
+  scale_color_brewer(palette="Set1", na.value = "grey50") +
+  scale_fill_brewer(palette="Set1", na.value = "grey50") +
+  my_theme() +
+  labs(
+    color = "",
+    fill = "",
+    x = "Age",
+    y = "Density",
+    title = "",
+    subtitle = "Age distribution of flu cases",
+    caption = ""
+  )
+
+library(gridExtra)
+library(grid)
+
+grid.arrange(p1, p2, ncol = 2)
+
+```
+
