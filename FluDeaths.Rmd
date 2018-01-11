@@ -51,6 +51,56 @@ fluH7N9.china.2013_gather$province <- factor(fluH7N9.china.2013_gather$province,
 fluH7N9.china.2013_gather$age <- as.numeric(as.character(fluH7N9.china.2013_gather$age))
 ```
 
+```{r}
+# preparing my ggplot2 theme of choice
+
+library(ggplot2)
+my_theme <- function(base_size = 12, base_family = "sans"){
+  theme_minimal(base_size = base_size, base_family = base_family) +
+  theme(
+    axis.text = element_text(size = 12),
+    axis.text.x = element_text(angle = 45, vjust = 0.5, hjust = 0.5),
+    axis.title = element_text(size = 14),
+    panel.grid.major = element_line(color = "grey"),
+    panel.grid.minor = element_blank(),
+    panel.background = element_rect(fill = "aliceblue"),
+    strip.background = element_rect(fill = "lightgrey", color = "grey", size = 1),
+    strip.text = element_text(face = "bold", size = 12, color = "black"),
+    legend.position = "bottom",
+    legend.justification = "top", 
+    legend.box = "horizontal",
+    legend.box.background = element_rect(colour = "grey50"),
+    legend.background = element_blank(),
+    panel.border = element_rect(color = "grey", fill = NA, size = 0.5)
+  )
+}
+```
+
+```{r}
+# plotting raw data
+
+ggplot(data = fluH7N9.china.2013_gather, aes(x = Date, y = age, fill = outcome)) +
+  stat_density2d(aes(alpha = ..level..), geom = "polygon") +
+  geom_jitter(aes(color = outcome, shape = gender), size = 1.5) +
+  geom_rug(aes(color = outcome)) +
+  labs(
+    fill = "Outcome",
+    color = "Outcome",
+    alpha = "Level",
+    shape = "Gender",
+    x = "Date in 2013",
+    y = "Age",
+    title = "2013 Influenza A H7N9 cases in China",
+    subtitle = "Dataset from 'outbreaks' package (Kucharski et al. 2014)",
+    caption = ""
+  ) +
+  facet_grid(Group ~ province) +
+  my_theme() +
+  scale_shape_manual(values = c(15, 16, 17)) +
+  scale_color_brewer(palette="Set1", na.value = "grey50") +
+  scale_fill_brewer(palette="Set1")
+```
+
 
 Add a new chunk by clicking the *Insert Chunk* button on the toolbar or by pressing *Cmd+Option+I*.
 
